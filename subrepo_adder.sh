@@ -51,6 +51,7 @@ subrepo_file_date() {
   subrepo="${filename%%/*}"           # shlibs
   subrepo_filename="${filename#*/}"   # examples/rpath_entries.py
 
+  # Thanks to Eric Lee for this log cmd. via: https://stackoverflow.com/a/14470212
   ( cd "$subrepo" || die "couldn't cd to ${subrepo}"
     git log -1 --format="%at" -- "$subrepo_filename" || die "couldn't get git log for (${subrepo_filename}) (${filename})"
   ) || exit 1
@@ -61,6 +62,9 @@ main() {
   # subrepos | while read -r repo; do
 
   [ -n "$*" ] || usage
+  [ "$*" = "-h" ] && usage
+  [ "$*" = "--help" ] && usage
+
   for repo in "$@"; do
     subrepo_files "$repo" | while read -r repo_file; do
       subrepo_file_date "$repo_file" | {

@@ -16,3 +16,26 @@ There isn't much of value in these retired repos.
 * [**turtleartiste**](turtleartiste) (formerly <https://github.com/glvnst/turtleartiste>) - python turtle module experiment
 * [**wikitext**](wikitext) (formerly <https://github.com/glvnst/wikitext>) - command-line tool to download the raw wikitext source of the named wikipedia article(s)
 * [**wx**](wx) (formerly <https://github.com/glvnst/wx>) - yahoo-powered command-line weather, the underlying service no longer exists
+
+### About subrepo_adder
+
+[`subrepo_adder.sh`](subrepo_adder.sh) is a tool that I use when I retire other repos into this one. It's a shell script which lets me clone my old repos into this working directory, then add them their contents to *this* repo without losing the commit date information. The date information is important for my reference but it also gives people encountering this repo a better idea of how old/untouched some of this stuff it.
+
+#### Usage
+
+```
+Usage: ./subrepo_adder.sh subrepo [...]
+
+This script is for adding the contents of subrepos to the current repo
+while maintaining the GIT_AUTHOR_DATE and GIT_COMMITTER_DATE.
+
+Example Steps:
+
+$ git init # if you haven't done this already
+$ git clone some_repo.git
+$ git clone some_other_repo.git
+$ git clone some_third_repo.git
+$ ./subrepo_adder.sh some_repo some_other_repo some_third_repo
+$ git remote add origin some_repo_url_for_this_container_repo.git
+$ git push
+```
