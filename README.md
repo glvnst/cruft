@@ -7,6 +7,7 @@ This is an archive of old projects and repos.
 There isn't much of value in these retired repos.
 
 * **MapStack** (formerly <https://github.com/glvnst/MapStack>) - Python module which implements a stack of dicts, vertical key search, whiteouts
+* **checksome** (formerly <https://github.com/glvnst/checksome>) - tool for recording filesystem metadata and file checksum snapshots
 * **ntlist** (formerly <https://github.com/glvnst/ntlist>) - Python collection of named tuples
 * **shlibs** (formerly <https://github.com/glvnst/shlibs>) - python module recursively finds app library dependencies, optionally can make a chroot jail with this info
 * **tctransform** (formerly <https://github.com/glvnst/tctransform>) - Tail Call Transform - a python decorator the rewrites recursive tail calls into iterations
