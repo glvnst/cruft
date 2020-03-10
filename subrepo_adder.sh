@@ -6,7 +6,7 @@ TZ_OFFSET="+0100"
 
 usage() {
   printf '%s\n' \
-    "Usage: $0 subrepo [...]" \
+    "Usage: $0 [-h|--help] subrepo [...]" \
     "" \
     "This script is for adding the contents of subrepos to the current repo" \
     "while maintaining the GIT_AUTHOR_DATE and GIT_COMMITTER_DATE." \

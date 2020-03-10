@@ -24,7 +24,7 @@ There isn't much of value in these retired repos.
 #### Usage
 
 ```
-Usage: ./subrepo_adder.sh subrepo [...]
+Usage: ./subrepo_adder.sh [-h|--help] subrepo [...]
 
 This script is for adding the contents of subrepos to the current repo
 while maintaining the GIT_AUTHOR_DATE and GIT_COMMITTER_DATE.
