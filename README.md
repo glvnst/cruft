@@ -19,7 +19,7 @@ There isn't much of value in these retired repos.
 
 ### About subrepo_adder
 
-[`subrepo_adder.sh`](subrepo_adder.sh) is a tool that I use when I retire other repos into this one. It's a shell script which lets me clone my old repos into this working directory, then add them their contents to *this* repo without losing the commit date information. The date information is important for my reference but it also gives people encountering this repo a better idea of how old/untouched some of this stuff it.
+[`subrepo_adder.sh`](subrepo_adder.sh) is a tool that I use when I retire other repos into this one. It's a shell script which lets me clone my old repos into subdirs of this working directory, then add their contents to *this* repo without losing the commit date information. The date information is important for my reference but it also gives people encountering this repo a better idea of how old/untouched some of this stuff is.
 
 #### Usage
 
