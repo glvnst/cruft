@@ -2,8 +2,6 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
   <_name>Delete Above</_name>
   <id>com.galvanist.sw.plugins.deleteabove</id>
-  <dependency type="executable" location="extensions">delete_above.py</dependency>
-  <dependency type="executable" location="extensions">inkex.py</dependency>
   <effect>
     <object-type>all</object-type>
       <effects-menu>
@@ -11,6 +9,6 @@
       </effects-menu>
   </effect>
   <script>
-    <command reldir="extensions" interpreter="python">delete_above.py</command>
+    <command location="inx" interpreter="python">delete_above.py</command>
   </script>
 </inkscape-extension>
