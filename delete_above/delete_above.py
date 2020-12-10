@@ -1,32 +1,26 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Inkscape plugin: delete the selected object(s) and any objects on top of them.
 
-I.E. delete the selected element(s) and any other elements that are completely
-within the bounding-boxes of the selected elements that have a greater z-order
+I.E. delete the selected node(s) and any other nodes that are completely
+within the bounding-boxes of the selected nodes that have a greater z-order
 
 Simply put, you select a "background" rectangle, then use this plugin to
 delete it and everything that appears on top of it.
 """
 
-import sys
 import collections
 import subprocess
 import os
 import pprint
-
-# inkscape specific
-sys.path.extend(['/usr/share/inkscape/extensions',
-                 '/Applications/Inkscape.app/Contents/Resources/extensions'])
 import inkex
-
 
 Point = collections.namedtuple('Point', ['x', 'y'])
 
 Box = collections.namedtuple('Box', ['tl', 'tr', 'br', 'bl'])
 # tl=top left, tr=top right, br=bottom right, bl=bottom left
 
-ElementInfo = collections.namedtuple('ElementInfo',
+nodeInfo = collections.namedtuple('nodeInfo',
                                      ['x', 'y', 'width', 'height'])
 
 
@@ -37,37 +31,39 @@ def contains(outer, inner):
 
 
 class DeleteAboveEffect(inkex.Effect):
-    """ Delete the selected element and everything above it """
-    element_info = None
+    """ Delete the selected node and everything above it """
+    node_info = None
 
-    def load_element_info(self):
+    def load_node_info(self):
         """ Ask inkscape for information about all object bounding boxes """
-        element_info = dict()
-        command = ['inkscape', '--query-all', self.svg_file]
+        node_info = dict()
+        command = ['inkscape', '--query-all', self.options.input_file]
         check_output = subprocess.check_output
 
         with open(os.devnull, 'w') as null:
             for line in check_output(command, stderr=null).splitlines():
-                raw_id, raw_x, raw_y, raw_width, raw_height = line.split(',')
-                element_info[raw_id] = ElementInfo(float(raw_x),
+                raw_id, raw_x, raw_y, raw_width, raw_height = line.split(b',')
+                node_info[raw_id.decode("UTF-8")] = nodeInfo(float(raw_x),
                                                    float(raw_y),
                                                    float(raw_width),
                                                    float(raw_height))
 
-        self.element_info = element_info
+        self.node_info = node_info
         return
 
-    def remove(self, element):
-        """ Remove the specified element from the document tree """
-        parent = self.getParentNode(element)
+    def remove(self, node):
+        """ Remove the specified node from the document tree """
+        parent = node.getparent()
         if parent is None:
             return
-        parent.remove(element)
+        parent.remove(node)
 
-    def bbox(self, element):
-        """ Return the bounding-box of the given element """
-        element_id = element.attrib['id']
-        info = self.element_info[element_id]
+    def bbox(self, node):
+        """ Return the bounding-box of the given node """
+        node_id = node.get('id')
+        #inkex.utils.debug("Check if " + str(node_id) + " is in " + str(self.node_info))
+        info = self.node_info[node_id]           
+        
         x = info.x
         y = info.y
         width = info.width
@@ -80,43 +76,42 @@ class DeleteAboveEffect(inkex.Effect):
 
     def effect(self):
         """
-        For every selected element, remove it and all items on top of it
+        For every selected node, remove it and all items on top of it
         """
-        self.load_element_info()
-        elements_to_remove = list()
+        self.load_node_info()
+        nodes_to_remove = list()
 
-        for selected_element in self.selected.itervalues():
-            selected_element_bbox = self.bbox(selected_element)
-            elements_to_remove.append(selected_element)
+        for id, node in self.svg.selected.items():
+            selected_node_bbox = self.bbox(node)
+            nodes_to_remove.append(node)
 
-            # search the document tree for the selected element
-            # when found, every subsequent element will be "above" it.
+            # search the document tree for the selected node
+            # when found, every subsequent node will be "above" it.
             # (i.e. svg documents draw from the background up, so a background
-            # element will appear first, then elements that are progressively
+            # node will appear first, then nodes that are progressively
             # closer to the viewer will appear subsequently in the svg file)
-            found_selected_element = False
-            for element in self.document.getiterator():
-                if not found_selected_element:
-                    if element == selected_element:
-                        found_selected_element = True
+            found_selected_node = False
+            for node in self.document.getiterator():
+                if not found_selected_node:
+                    if node == node:
+                        found_selected_node = True
                     continue
-                # Hereafter we are iterating over all elements above the
-                # selected element. We need to delete them if they appear to
+                # Hereafter we are iterating over all nodes above the
+                # selected node. We need to delete them if they appear to
                 # be "on top of" the selection (i.e. within the bounding box
                 # of the selection)
                 try:
-                    element_bbox = self.bbox(element)
+                    node_bbox = self.bbox(node)
                 except KeyError:
                     continue
-                if contains(selected_element_bbox, element_bbox):
-                    elements_to_remove.append(element)
+                if contains(selected_node_bbox, node_bbox):
+                    nodes_to_remove.append(node)
 
         # Now we remove the items we've previously found. Search and remove
         # need to be separate bulk steps because tree search is disrupted by
         # tree modification
-        for condemned_element in set(elements_to_remove):
-            self.remove(condemned_element)
-
+        for condemned_node in set(nodes_to_remove):
+            self.remove(condemned_node)
 
 if __name__ == '__main__':
     if False:
@@ -125,5 +120,4 @@ if __name__ == '__main__':
         FMT = PPRINTER.pformat
         DUMP = lambda obj: inkex.debug(FMT(obj))
 
-    EFFECT = DeleteAboveEffect()
-    EFFECT.affect()
+    DeleteAboveEffect().run()
